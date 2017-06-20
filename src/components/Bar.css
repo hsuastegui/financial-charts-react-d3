@@ -1,0 +1,7 @@
+.barChart .bar rect {
+  fill: steelblue;
+}
+
+.barChart .bar rect:hover {
+  fill: orange;
+}

@@ -1,0 +1,12 @@
+.volume path.volume {
+  fill: #AAAAAA;
+  opacity: 0.5;
+}
+
+.volume path.volume.up {
+  fill: #00AA00;
+}
+
+.volume path.volume.down {
+  fill: #FF0000;
+}

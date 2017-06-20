@@ -1,0 +1,13 @@
+text {
+  fill: #000;
+}
+.title {
+  text-align: center;
+}
+.title .chartType {
+  text-transform: capitalize;
+}
+.chart svg {
+  display: block;
+  margin: 0 auto;
+}
