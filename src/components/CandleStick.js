@@ -3,9 +3,9 @@ import * as d3 from "d3";
 import techan from "techan";
 import ReactFauxDOM from "react-faux-dom";
 import { formatData, margin, width, height } from "../util";
-import "./VolumeChart.css";
+import "./CandleStick.css";
 
-class VolumeChart extends React.Component {
+class CandleStick extends React.Component {
   state = {
     data: [],
     currentData: []
@@ -23,14 +23,18 @@ class VolumeChart extends React.Component {
   }
   render() {
     return (
-      <section className="volumeChart">
-        <h2 className="title">Volume Chart</h2>
+      <section className="candleStick">
+        <h2 className="title">Candlestick Chart</h2>
+        <button onClick={this.handleMore}>More</button>
         <div className="chart">
           {this.buildChart(this.state.currentData)}
         </div>
       </section>
     );
   }
+  handleMore = () => {
+    this.setState({ currentData: this.state.data.slice(101, 200) });
+  };
   buildChart = data => {
     const faux = ReactFauxDOM.createElement("svg");
     faux.setAttribute("class", "chart");
@@ -42,20 +46,16 @@ class VolumeChart extends React.Component {
       .padding(0.1);
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(data, d => d.volume)])
+      .domain([d3.min(data, d => d.close), d3.max(data, d => d.close)])
       .range([height, 0]);
 
     const xAxis = d3
       .axisBottom(x)
       .tickValues(x.domain().filter((d, i) => !(i % 10)))
       .tickFormat(d3.timeFormat("%-d/%-m/%y"));
-    const yAxis = d3.axisLeft(y).tickFormat(d3.format(",.3s"));
+    const yAxis = d3.axisLeft(y);
 
-    const volume = techan.plot
-      .volume()
-      .accessor(techan.accessor.ohlc()) // For volume bar highlighting
-      .xScale(x)
-      .yScale(y);
+    const candlestick = techan.plot.candlestick().xScale(x).yScale(y);
 
     const svg = d3
       .select(faux)
@@ -64,14 +64,13 @@ class VolumeChart extends React.Component {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    svg.append("g").attr("class", "volume").datum(data).call(volume);
+    svg.append("g").attr("class", "candlestick").datum(data).call(candlestick);
 
     svg
       .append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-    //svg.selectAll("g.x.axis .tick text").attr("transform", "rotate(-90)");
 
     svg
       .append("g")
@@ -82,10 +81,10 @@ class VolumeChart extends React.Component {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Volume");
+      .text("Price ($)");
 
     return faux.toReact();
   };
 }
 
-export default VolumeChart;
+export default CandleStick;
