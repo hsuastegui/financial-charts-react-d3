@@ -2,53 +2,52 @@ import React from "react";
 import * as d3 from "d3";
 import techan from "techan";
 import ReactFauxDOM from "react-faux-dom";
-import { formatData, margin, width, height } from "../util";
+import { margin, width, height } from "../util";
+import { resizeObserver } from "../util/Observers";
 import "./VolumeChart.css";
 
 class VolumeChart extends React.Component {
   state = {
-    data: [],
-    currentData: []
+    width: width
+  };
+  static defaultProps = {
+    data: []
   };
   componentDidMount() {
-    d3.csv(this.props.data, formatData, (error, data) => {
-      const sortedData = data.sort((a, b) => {
-        return d3.ascending(a.date, b.date);
-      });
+    const element = document.getElementById("volume");
+    this.setState({
+      width: element.clientWidth - margin.left - margin.right
+    });
+    resizeObserver.subscribe(() => {
       this.setState({
-        data: sortedData,
-        currentData: sortedData.slice(0, 100)
+        width: element.clientWidth - margin.left - margin.right
       });
     });
   }
   render() {
     return (
-      <section className="volumeChart">
+      <section className="volumeChart" id="volume">
         <h2 className="title">Volume Chart</h2>
         <div className="chart">
-          {this.buildChart(this.state.currentData)}
+          {this.buildChart(this.props.data, this.state.width)}
         </div>
       </section>
     );
   }
-  buildChart = data => {
+  buildChart = (data, width) => {
     const faux = ReactFauxDOM.createElement("svg");
     faux.setAttribute("class", "chart");
 
     const x = d3
-      .scaleBand()
-      .domain(data.map(d => d.date))
-      .rangeRound([0, width])
-      .padding(0.1);
+      .scaleTime()
+      .domain(d3.extent(data, d => d.date))
+      .rangeRound([0, width]);
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(data, d => d.volume)])
+      .domain([0, d3.max(this.props.total, d => d.volume)])
       .range([height, 0]);
 
-    const xAxis = d3
-      .axisBottom(x)
-      .tickValues(x.domain().filter((d, i) => !(i % 10)))
-      .tickFormat(d3.timeFormat("%-d/%-m/%y"));
+    const xAxis = d3.axisBottom(x).ticks(4, d3.timeFormat("%-d/%-m/%y"));
     const yAxis = d3.axisLeft(y).tickFormat(d3.format(",.3s"));
 
     const volume = techan.plot

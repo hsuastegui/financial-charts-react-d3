@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "d3": "^4.9.1",
+    "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-faux-dom": "^4.0.3",
+    "rx-dom": "^7.0.3",
+    "rxjs": "^5.4.1",
     "techan": "https://github.com/hsuastegui/techan.js/archive/master.tar.gz"
   },
   "devDependencies": {
@@ -20,6 +24,7 @@
     "babel-preset-stage-3": "^6.24.1",
     "css-loader": "^0.28.4",
     "file-loader": "^0.11.2",
+    "http-server": "^0.10.0",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.6",
     "webpack": "^2.6.1",
@@ -28,6 +33,6 @@
   "scripts": {
     "build": "webpack -p",
     "dev": "webpack --watch",
-    "start": "webpack-dev-server"
+    "start": "http-server public"
   }
 }
